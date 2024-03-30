@@ -34,40 +34,61 @@ module.exports = {
             .addChannelTypes(ChannelType.GuildCategory)
             .setRequired(true),
         ),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("remove")
+        .setDescription("Remove Chanel!")
+        .addChannelOption((option) =>
+          option
+            .setName("channel-exist")
+            .setDescription("Remove Channel")
+            .addChannelTypes(ChannelType.GuildText)
+            .addChannelTypes(ChannelType.GuildVoice)
+            .setRequired(true),
+        ),
     ),
 
   async execute(interaction) {
-    const newChannel = interaction.options.getString("channel-name");
-    const existCateogry = interaction.options.getChannel("category-name");
-    const channelType = interaction.options.getString("channel-type");
-    let channelTypeValue;
-    switch (channelType) {
-      case "text":
-        channelTypeValue = ChannelType.GuildText;
-        break;
-      case "voice":
-        channelTypeValue = ChannelType.GuildVoice;
-        break;
-      default:
-        break;
-    }
+    const subCommand = interaction.options.getSubcommand();
+    if (subCommand === "add") {
+      const newChannel = interaction.options.getString("channel-name");
+      const existCateogry = interaction.options.getChannel("category-name");
+      const channelType = interaction.options.getString("channel-type");
+      let channelTypeValue;
+      switch (channelType) {
+        case "text":
+          channelTypeValue = ChannelType.GuildText;
+          break;
+        case "voice":
+          channelTypeValue = ChannelType.GuildVoice;
+          break;
+        default:
+          break;
+      }
 
-    await interaction.guild.channels
-      .create({
-        name: newChannel,
-        type: channelTypeValue,
-        parent: existCateogry,
-      })
-      .then(() => {
-        interaction.reply({
-          content: `${newChannel} ${channelType} channel has been added.`,
+      await interaction.guild.channels
+        .create({
+          name: newChannel,
+          type: channelTypeValue,
+          parent: existCateogry,
+        })
+        .then(() => {
+          interaction.reply({
+            content: `${newChannel} ${channelType} channel has been added.`,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+          interaction.reply({
+            content: `error to added ${newChannel} channel!`,
+          });
         });
-      })
-      .catch((err) => {
-        console.log(err);
-        interaction.reply({
-          content: `error to added ${newChannel} channel!`,
-        });
+    } else if (subCommand === "remove") {
+      const existChannel = interaction.options.getChannel("channel-exist");
+      interaction.reply({
+        content: `${existChannel} remove!`,
       });
+    }
   },
 };
