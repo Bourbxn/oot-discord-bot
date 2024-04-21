@@ -18,6 +18,7 @@ for (const folder of functionFolders) {
     require(`./functions/${folder}/${file}`)(client);
 }
 
+//lazygit(1)
 client.handleEvents();
 client.handleCommands();
 client.login(TOKEN);
